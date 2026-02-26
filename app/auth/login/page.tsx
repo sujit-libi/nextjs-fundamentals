@@ -23,8 +23,11 @@ import { loginSchema } from '@/app/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -35,18 +38,20 @@ export default function LoginPage() {
   });
 
   async function onSubmit(data: z.infer<typeof loginSchema>) {
-    await authClient.signIn.email({
-      email: data.email,
-      password: data.password,
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success('Logged in successfully!!!');
-          router.push('/');
+    startTransition(async () => {
+      await authClient.signIn.email({
+        email: data.email,
+        password: data.password,
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success('Logged in successfully!!!');
+            router.push('/');
+          },
+          onError: (error) => {
+            toast.error(error.error.message);
+          },
         },
-        onError: (error) => {
-          toast.error(error.error.message);
-        },
-      },
+      });
     });
   }
   return (
@@ -95,7 +100,16 @@ export default function LoginPage() {
               )}
             />
 
-            <Button>Login</Button>
+            <Button disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  <span>Loading...</span>
+                </>
+              ) : (
+                <span>Login</span>
+              )}
+            </Button>
           </FieldGroup>
         </form>
       </CardContent>

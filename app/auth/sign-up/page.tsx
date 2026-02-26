@@ -22,8 +22,11 @@ import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
+import { useTransition } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export default function SignUpPage() {
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   const form = useForm({
@@ -35,20 +38,22 @@ export default function SignUpPage() {
     },
   });
 
-  async function onSubmit(data: z.infer<typeof signupSchema>) {
-    await authClient.signUp.email({
-      email: data.email,
-      name: data.name,
-      password: data.password,
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success('Account created successfully!!!');
-          router.push('/');
+  function onSubmit(data: z.infer<typeof signupSchema>) {
+    startTransition(async () => {
+      await authClient.signUp.email({
+        email: data.email,
+        name: data.name,
+        password: data.password,
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success('Account created successfully!!!');
+            router.push('/');
+          },
+          onError: (error) => {
+            toast.error(error.error.message);
+          },
         },
-        onError: (error) => {
-          toast.error(error.error.message);
-        },
-      },
+      });
     });
   }
 
@@ -115,7 +120,16 @@ export default function SignUpPage() {
               )}
             />
 
-            <Button>Sign up</Button>
+            <Button disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  <span>Registering...</span>
+                </>
+              ) : (
+                <span>Signup</span>
+              )}
+            </Button>
           </FieldGroup>
         </form>
       </CardContent>
