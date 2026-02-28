@@ -10,6 +10,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
+export const dynamic = 'force-static';
+export const revalidate = 30; // Time based revalidation
+
 export default function BlogPage() {
   // Fetching Data on Client Side
   // const data = useQuery(api.posts.getPosts);
