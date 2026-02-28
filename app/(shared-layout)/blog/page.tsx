@@ -47,8 +47,11 @@ async function LoadBlogList() {
             <Image
               alt="blog-image"
               fill
-              className="rounded-t-lg"
-              src="https://intothecommerce.com/wp-content/uploads/2024/09/What-Is-Technology-The-Definition-Types-and-Impacts-1024x602.jpg"
+              className="rounded-t-lg object-cover"
+              src={
+                post.imageUrl ??
+                'https://intothecommerce.com/wp-content/uploads/2024/09/What-Is-Technology-The-Definition-Types-and-Impacts-1024x602.jpg'
+              }
             />
           </div>
           <CardContent>

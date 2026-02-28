@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         port: '',
       },
+      {
+        hostname: 'keen-pig-699.convex.cloud',
+        protocol: 'https',
+        port: '',
+      },
     ],
   },
 };
