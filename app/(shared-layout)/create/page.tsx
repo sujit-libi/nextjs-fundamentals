@@ -1,5 +1,6 @@
 'use client';
 
+import { createBlogAction } from '@/app/actions';
 import { postSchema } from '@/app/schemas/blog';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,10 +18,20 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { api } from '@/convex/_generated/api';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from 'convex/react';
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import z from 'zod';
 
 export default function CreateRoute() {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const mutation = useMutation(api.posts.createPost);
   const form = useForm({
     resolver: zodResolver(postSchema),
     defaultValues: {
@@ -28,6 +39,42 @@ export default function CreateRoute() {
       content: '',
     },
   });
+
+  /**
+   *
+   * Client Side Mutation
+   *
+   */
+
+  // function onSubmit(values: z.infer<typeof postSchema>) {
+  //   startTransition(async () => {
+  //     mutation({
+  //       title: values.title,
+  //       body: values.content,
+  //     });
+
+  //     // Route Handler Example
+  //     // await fetch('/api/create-blog', {
+  //     //   method: 'POST',
+  //     // });
+  //     toast.success('Blog Post Created Successfully!!!!');
+  //     router.push('/');
+  //   });
+  // }
+
+  /**
+   *
+   * Server Side Mutation
+   *
+   */
+
+  function onSubmit(values: z.infer<typeof postSchema>) {
+    startTransition(async () => {
+      // Server Action
+      await createBlogAction(values);
+    });
+  }
+
   return (
     <div className="py-12">
       <div className="text-center mb-12">
@@ -44,7 +91,7 @@ export default function CreateRoute() {
           <CardDescription>Create a new blog article.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup className="gap-y-4">
               <Controller
                 name="title"
@@ -81,7 +128,16 @@ export default function CreateRoute() {
                   </Field>
                 )}
               />
-              <Button>Create Post</Button>
+              <Button disabled={isPending}>
+                {isPending ? (
+                  <>
+                    <Loader2 className="animate-spin size-4" />
+                    <span>Creating Post...</span>
+                  </>
+                ) : (
+                  <span>Create Post</span>
+                )}
+              </Button>
             </FieldGroup>
           </form>
         </CardContent>
