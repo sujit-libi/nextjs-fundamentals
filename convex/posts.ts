@@ -1,6 +1,7 @@
 import { mutation, query } from './_generated/server';
 import { ConvexError, v } from 'convex/values';
 import { authComponent } from './auth';
+import { id } from 'zod/v4/locales';
 
 // Create a new post with the given text
 export const createPost = mutation({
@@ -55,5 +56,28 @@ export const generateImageUploadUrl = mutation({
     }
 
     return await ctx.storage.generateUploadUrl();
+  },
+});
+
+export const getPostById = query({
+  args: {
+    postId: v.id('posts'),
+  },
+  handler: async (ctx, args) => {
+    const post = await ctx.db.get(args.postId);
+
+    if (!post) {
+      return null;
+    }
+
+    const resolvedImageUrl =
+      post?.imageStorageId !== undefined
+        ? await ctx.storage.getUrl(post.imageStorageId)
+        : null;
+
+    return {
+      ...post,
+      imageUrl: resolvedImageUrl,
+    };
   },
 });
