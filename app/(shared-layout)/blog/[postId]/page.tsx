@@ -10,6 +10,7 @@ import { ArrowBigLeft, ArrowLeft } from 'lucide-react';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 interface PostIdRouteProps {
   params: Promise<{
@@ -50,10 +51,16 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
     await fetchQuery(api.presence.getUserId, {}, { token }),
   ]);
 
+  if (!userId) {
+    return redirect('/auth/login');
+  }
+
   if (!post) {
     return (
       <div>
-        <h1 className="text-6xl font-extrabold text-red-500 py-20"></h1>
+        <h1 className="text-6xl font-extrabold text-red-500 py-20">
+          Post not found!!
+        </h1>
       </div>
     );
   }
