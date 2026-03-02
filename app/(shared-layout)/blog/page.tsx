@@ -6,12 +6,20 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/convex/_generated/api';
 import { fetchQuery } from 'convex/nextjs';
 import { useQuery } from 'convex/react';
+import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
 export const dynamic = 'force-static';
 export const revalidate = 30; // Time based revalidation
+
+export const metadata: Metadata = {
+  title: 'Blog | Next.js 16 Tutorial',
+  description: 'Read our latest article and insights',
+  category: 'Web development',
+  authors: [{ name: 'Sujit Libi' }],
+};
 
 export default function BlogPage() {
   // Fetching Data on Client Side
