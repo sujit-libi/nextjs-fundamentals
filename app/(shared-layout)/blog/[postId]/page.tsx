@@ -1,8 +1,9 @@
 import { buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { CommentSection } from '@/components/web/comment-section';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
-import { fetchQuery } from 'convex/nextjs';
+import { fetchQuery, preloadQuery } from 'convex/nextjs';
 import { ArrowBigLeft, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -15,7 +16,17 @@ interface PostIdRouteProps {
 
 export default async function PostIdRoute({ params }: PostIdRouteProps) {
   const { postId } = await params;
-  const post = await fetchQuery(api.posts.getPostById, { postId: postId });
+
+  const [post, preloadedComments] = await Promise.all([
+    await fetchQuery(api.posts.getPostById, { postId: postId }),
+    // const comments = await fetchQuery(api.comments.getCommentsByPost, {
+    //   postId: postId,
+    // });
+    await preloadQuery(api.comments.getCommentsByPost, {
+      postId: postId,
+    }),
+  ]);
+
   if (!post) {
     return (
       <div>
@@ -65,6 +76,7 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
       </p>
 
       <Separator className="my-8" />
+      <CommentSection preloadedComments={preloadedComments} />
     </div>
   );
 }
