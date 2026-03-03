@@ -7,7 +7,7 @@ import { api } from '@/convex/_generated/api';
 import { redirect } from 'next/navigation';
 import { fetchAuthMutation, getToken } from '@/lib/auth-server';
 import { fetchMutation } from 'convex/nextjs';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 
 export async function createBlogAction(values: z.infer<typeof postSchema>) {
   const parsed = postSchema.safeParse(values);
@@ -59,6 +59,7 @@ export async function createBlogAction(values: z.infer<typeof postSchema>) {
     };
   }
 
-  revalidatePath('/blog'); // This is on demand revalidation
+  // revalidatePath('/blog'); // This is on demand revalidation
+  updateTag('blog');
   return redirect('/blog');
 }

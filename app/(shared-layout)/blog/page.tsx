@@ -7,12 +7,14 @@ import { api } from '@/convex/_generated/api';
 import { fetchQuery } from 'convex/nextjs';
 import { useQuery } from 'convex/react';
 import { Metadata } from 'next';
+import { cacheLife, cacheTag } from 'next/cache';
 import Image from 'next/image';
 import Link from 'next/link';
+import { connection } from 'next/server';
 import { Suspense } from 'react';
 
-export const dynamic = 'force-static';
-export const revalidate = 30; // Time based revalidation
+// export const dynamic = 'force-static';
+// export const revalidate = 30; // Time based revalidation
 
 export const metadata: Metadata = {
   title: 'Blog | Next.js 16 Tutorial',
@@ -47,7 +49,16 @@ export default function BlogPage() {
 }
 
 async function LoadBlogList() {
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  // Intentionally slowing down the app to load data
+  // await new Promise((resolve) => setTimeout(resolve, 5000));
+
+  // Runtime api
+  // await connection();
+
+  'use cache';
+  cacheLife('hours');
+  cacheTag('blog');
+  // updateTag('blog)
   const data = await fetchQuery(api.posts.getPosts);
 
   return (
