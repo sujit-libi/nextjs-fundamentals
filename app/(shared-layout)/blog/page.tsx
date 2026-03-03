@@ -7,7 +7,7 @@ import { api } from '@/convex/_generated/api';
 import { fetchQuery } from 'convex/nextjs';
 import { useQuery } from 'convex/react';
 import { Metadata } from 'next';
-import { cacheLife, cacheTag } from 'next/cache';
+// import { cacheLife, cacheTag } from 'next/cache';
 import Image from 'next/image';
 import Link from 'next/link';
 import { connection } from 'next/server';
@@ -53,11 +53,11 @@ async function LoadBlogList() {
   // await new Promise((resolve) => setTimeout(resolve, 5000));
 
   // Runtime api
-  // await connection();
+  await connection();
 
-  'use cache';
-  cacheLife('hours');
-  cacheTag('blog');
+  // 'use cache';
+  // cacheLife('hours');
+  // cacheTag('blog');
   // updateTag('blog)
   const data = await fetchQuery(api.posts.getPosts);
 

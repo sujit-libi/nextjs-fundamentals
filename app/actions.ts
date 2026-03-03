@@ -59,7 +59,7 @@ export async function createBlogAction(values: z.infer<typeof postSchema>) {
     };
   }
 
-  // revalidatePath('/blog'); // This is on demand revalidation
-  updateTag('blog');
+  revalidatePath('/blog'); // This is on demand revalidation
+  // updateTag('blog');
   return redirect('/blog');
 }
